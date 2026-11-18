@@ -7,6 +7,7 @@ const MemosHandler = require("./memos");
 const ResearchHandler = require("./research");
 const tutorialRouter = require("./tutorial");
 const ErrorHandler = require("./error").errorHandler;
+const csrf = require("csurf");
 
 const index = (app, db) => {
 
@@ -25,6 +26,9 @@ const index = (app, db) => {
 
     //Middleware to check if user has admin rights
     const isAdmin = sessionHandler.isAdminUserMiddleware;
+
+    // CSRF protection for the contributions form
+    const csrfProtection = csrf();
 
     // The main page of the app
     app.get("/", sessionHandler.displayWelcomePage);
@@ -48,8 +52,8 @@ const index = (app, db) => {
     app.post("/profile", isLoggedIn, profileHandler.handleProfileUpdate);
 
     // Contributions Page
-    app.get("/contributions", isLoggedIn, contributionsHandler.displayContributions);
-    app.post("/contributions", isLoggedIn, contributionsHandler.handleContributionsUpdate);
+    app.get("/contributions", isLoggedIn, csrfProtection, contributionsHandler.displayContributions);
+    app.post("/contributions", isLoggedIn, csrfProtection, contributionsHandler.handleContributionsUpdate);
 
     // Benefits Page
     app.get("/benefits", isLoggedIn, benefitsHandler.displayBenefits);

@@ -1,5 +1,5 @@
 const ProfileDAO = require("../data/profile-dao").ProfileDAO;
-const ESAPI = require("node-esapi");
+const { URL } = require("url");
 const {
     environmentalScripts
 } = require("../../config/config");
@@ -9,6 +9,18 @@ function ProfileHandler(db) {
     "use strict";
 
     const profile = new ProfileDAO(db);
+
+    const isHttpUrl = (value) => {
+        if (typeof value !== "string" || value.length === 0) {
+            return false;
+        }
+        try {
+            const parsed = new URL(value);
+            return parsed.protocol === "http:" || parsed.protocol === "https:";
+        } catch (err) {
+            return false;
+        }
+    };
 
     this.displayProfile = (req, res, next) => {
         const {
@@ -21,7 +33,7 @@ function ProfileHandler(db) {
             if (err) return next(err);
             doc.userId = userId;
 
-            doc.website = ESAPI.encoder().encodeForHTML(doc.website);
+            doc.websiteSafe = isHttpUrl(doc.website);
 
             return res.render("profile", {
                 ...doc,
