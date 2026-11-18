@@ -22,7 +22,7 @@ function UserDAO(db) {
             firstName,
             lastName,
             benefitStartDate: this.getRandomFutureDate(),
-            password //received from request param
+            password: bcrypt.hashSync(password, bcrypt.genSaltSync(10))
         };
 
         // Add email if set
@@ -52,8 +52,8 @@ function UserDAO(db) {
     this.validateLogin = (userName, password, callback) => {
 
         // Helper function to compare passwords
-        const comparePassword = (fromDB, fromUser) => {
-            return fromDB === fromUser;
+        const comparePassword = (fromUser, fromDB) => {
+            return bcrypt.compareSync(fromUser, fromDB);
         };
 
         // Callback to pass to MongoDB that validates a user document
@@ -109,4 +109,4 @@ function UserDAO(db) {
     };
 }
 
-module.exports = { UserDAO };
+module.exports = { UserDAO };

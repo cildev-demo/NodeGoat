@@ -56,12 +56,20 @@ const AllocationsDAO = function(db){
 
     this.getByUserIdAndThreshold = (userId, threshold, callback) => {
         const parsedUserId = parseInt(userId);
+        const parsedThreshold = parseInt(threshold, 10);
+
+        if (threshold && isNaN(parsedThreshold)) {
+            return callback(new Error("Invalid threshold"), null);
+        }
 
         const searchCriteria = () => {
 
             if (threshold) {
                 return {
-                    $where: `this.userId == ${parsedUserId} && this.stocks > '${threshold}'`
+                    userId: parsedUserId,
+                    stocks: {
+                        $gt: parsedThreshold
+                    }
                 };
             }
             return {
