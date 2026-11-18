@@ -7,6 +7,7 @@ const MemosHandler = require("./memos");
 const ResearchHandler = require("./research");
 const tutorialRouter = require("./tutorial");
 const ErrorHandler = require("./error").errorHandler;
+const csrf = require("csurf");
 
 const index = (app, db) => {
 
@@ -25,6 +26,8 @@ const index = (app, db) => {
 
     //Middleware to check if user has admin rights
     const isAdmin = sessionHandler.isAdminUserMiddleware;
+
+    const csrfProtection = csrf();
 
     // The main page of the app
     app.get("/", sessionHandler.displayWelcomePage);
@@ -59,8 +62,8 @@ const index = (app, db) => {
     app.get("/allocations/:userId", isLoggedIn, allocationsHandler.displayAllocations);
 
     // Memos Page
-    app.get("/memos", isLoggedIn, memosHandler.displayMemos);
-    app.post("/memos", isLoggedIn, memosHandler.addMemos);
+    app.get("/memos", isLoggedIn, csrfProtection, memosHandler.displayMemos);
+    app.post("/memos", isLoggedIn, csrfProtection, memosHandler.addMemos);
 
     // Handle redirect for learning resources link
     app.get("/learn", isLoggedIn, (req, res) => {
