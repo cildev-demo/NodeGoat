@@ -56,7 +56,7 @@ MongoClient.connect(db, (err, db) => {
 
     // Template system setup
     swig.setDefaults({
-        autoescape: false
+        autoescape: true
     });
 
     http.createServer(app).listen(port, () => {
