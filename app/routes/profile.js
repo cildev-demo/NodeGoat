@@ -37,6 +37,7 @@ function ProfileHandler(db) {
 
             return res.render("profile", {
                 ...doc,
+                csrftoken: req.csrfToken(),
                 environmentalScripts
             });
         });
@@ -69,6 +70,7 @@ function ProfileHandler(db) {
                 address,
                 bankAcc,
                 bankRouting,
+                csrftoken: req.csrfToken(),
                 environmentalScripts
             });
         }
@@ -95,6 +97,7 @@ function ProfileHandler(db) {
 
                 return res.render("profile", {
                     ...user,
+                    csrftoken: req.csrfToken(),
                     environmentalScripts
                 });
             }
