@@ -48,8 +48,8 @@ const index = (app, db) => {
     app.get("/dashboard", isLoggedIn, sessionHandler.displayWelcomePage);
 
     // Profile page
-    app.get("/profile", isLoggedIn, profileHandler.displayProfile);
-    app.post("/profile", isLoggedIn, profileHandler.handleProfileUpdate);
+    app.get("/profile", isLoggedIn, csrfProtection, profileHandler.displayProfile);
+    app.post("/profile", isLoggedIn, csrfProtection, profileHandler.handleProfileUpdate);
 
     // Contributions Page
     app.get("/contributions", isLoggedIn, csrfProtection, contributionsHandler.displayContributions);
@@ -63,8 +63,8 @@ const index = (app, db) => {
     app.get("/allocations/:userId", isLoggedIn, allocationsHandler.displayAllocations);
 
     // Memos Page
-    app.get("/memos", isLoggedIn, memosHandler.displayMemos);
-    app.post("/memos", isLoggedIn, memosHandler.addMemos);
+    app.get("/memos", isLoggedIn, csrfProtection, memosHandler.displayMemos);
+    app.post("/memos", isLoggedIn, csrfProtection, memosHandler.addMemos);
 
     // Handle redirect for learning resources link
     app.get("/learn", isLoggedIn, (req, res) => {

@@ -111,7 +111,7 @@ function SessionHandler(db) {
         errors.verifyError = "";
         errors.emailError = "";
 
-        if (!USER_RE.test(userName)) {
+        if (typeof userName !== "string" || !USER_RE.test(userName)) {
             errors.userNameError = "Invalid user name.";
             return false;
         }

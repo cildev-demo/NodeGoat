@@ -27,6 +27,7 @@ function MemosHandler(db) {
             return res.render("memos", {
                 memosList: docs,
                 userId: userId,
+                csrftoken: req.csrfToken(),
                 environmentalScripts
             });
         });
