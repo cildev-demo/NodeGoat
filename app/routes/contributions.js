@@ -20,6 +20,7 @@ function ContributionsHandler(db) {
             contrib.userId = userId; //set for nav menu items
             return res.render("contributions", {
                 ...contrib,
+                csrftoken: req.csrfToken(),
                 environmentalScripts
             });
         });
@@ -42,6 +43,7 @@ function ContributionsHandler(db) {
             return res.render("contributions", {
                 updateError: "Invalid contribution percentages",
                 userId,
+                csrftoken: req.csrfToken(),
                 environmentalScripts
             });
         }
@@ -50,6 +52,7 @@ function ContributionsHandler(db) {
             return res.render("contributions", {
                 updateError: "Contribution percentages cannot exceed 30 %",
                 userId,
+                csrftoken: req.csrfToken(),
                 environmentalScripts
             });
         }
@@ -61,6 +64,7 @@ function ContributionsHandler(db) {
             contributions.updateSuccess = true;
             return res.render("contributions", {
                 ...contributions,
+                csrftoken: req.csrfToken(),
                 environmentalScripts
             });
         });
