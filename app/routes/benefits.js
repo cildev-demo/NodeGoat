@@ -4,6 +4,7 @@ const {
 const {
     UserDAO
 } = require("../data/user-dao");
+const csrf = require("csurf");
 const {
     environmentalScripts
 } = require("../../config/config");
@@ -13,6 +14,7 @@ function BenefitsHandler(db) {
 
     const benefitsDAO = new BenefitsDAO(db);
     const userDAO = new UserDAO(db);
+    const csrfProtection = csrf();
 
     const checkAdmin = (req, res, next, callback) => {
         if (!req.session.userId) {
@@ -31,46 +33,56 @@ function BenefitsHandler(db) {
     };
 
     this.displayBenefits = (req, res, next) => {
-        return checkAdmin(req, res, next, () => {
-            benefitsDAO.getAllNonAdminUsers((error, users) => {
+        return csrfProtection(req, res, (csrfError) => {
+            if (csrfError) return next(csrfError);
 
-                if (error) return next(error);
+            return checkAdmin(req, res, next, () => {
+                benefitsDAO.getAllNonAdminUsers((error, users) => {
 
-                return res.render("benefits", {
-                    users,
-                    user: {
-                        isAdmin: true
-                    },
-                    environmentalScripts
+                    if (error) return next(error);
+
+                    return res.render("benefits", {
+                        users,
+                        user: {
+                            isAdmin: true
+                        },
+                        environmentalScripts,
+                        csrftoken: req.csrfToken()
+                    });
                 });
             });
         });
     };
 
     this.updateBenefits = (req, res, next) => {
-        return checkAdmin(req, res, next, () => {
-            const {
-                userId,
-                benefitStartDate
-            } = req.body;
+        return csrfProtection(req, res, (csrfError) => {
+            if (csrfError) return next(csrfError);
 
-            benefitsDAO.updateBenefits(userId, benefitStartDate, (error) => {
+            return checkAdmin(req, res, next, () => {
+                const {
+                    userId,
+                    benefitStartDate
+                } = req.body;
 
-                if (error) return next(error);
+                benefitsDAO.updateBenefits(userId, benefitStartDate, (error) => {
 
-                benefitsDAO.getAllNonAdminUsers((error, users) => {
                     if (error) return next(error);
 
-                    const data = {
-                        users,
-                        user: {
-                            isAdmin: true
-                        },
-                        updateSuccess: true,
-                        environmentalScripts
-                    };
+                    benefitsDAO.getAllNonAdminUsers((error, users) => {
+                        if (error) return next(error);
 
-                    return res.render("benefits", data);
+                        const data = {
+                            users,
+                            user: {
+                                isAdmin: true
+                            },
+                            updateSuccess: true,
+                            environmentalScripts,
+                            csrftoken: req.csrfToken()
+                        };
+
+                        return res.render("benefits", data);
+                    });
                 });
             });
         });
