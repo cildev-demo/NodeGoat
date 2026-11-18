@@ -57,32 +57,24 @@ function SessionHandler(db) {
         } = req.body;
         userDAO.validateLogin(userName, password, (err, user) => {
             const errorMessage = "Invalid username and/or password";
-            const invalidUserNameErrorMessage = "Invalid username";
-            const invalidPasswordErrorMessage = "Invalid password";
             if (err) {
-                if (err.noSuchUser) {
-                    console.log("Error: attempt to login with invalid user: ", userName);
-
+                if (err.noSuchUser || err.invalidPassword) {
                     return res.render("login", {
                         userName: userName,
                         password: "",
-                        loginError: invalidUserNameErrorMessage,
+                        loginError: errorMessage,
                         environmentalScripts
                     });
-                } else if (err.invalidPassword) {
-                    return res.render("login", {
-                        userName: userName,
-                        password: "",
-                        loginError: invalidPasswordErrorMessage,
-                        environmentalScripts
-                    });
-                } else {
-                    return next(err);
                 }
+                return next(err);
             }
 
-            req.session.userId = user._id;
-            return res.redirect(user.isAdmin ? "/benefits" : "/dashboard");
+            return req.session.regenerate((regenerateErr) => {
+                if (regenerateErr) return next(regenerateErr);
+
+                req.session.userId = user._id;
+                return res.redirect(user.isAdmin ? "/benefits" : "/dashboard");
+            });
         });
     };
 
