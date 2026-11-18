@@ -101,7 +101,7 @@ function SessionHandler(db) {
         const FNAME_RE = /^.{1,100}$/;
         const LNAME_RE = /^.{1,100}$/;
         const EMAIL_RE = /^[\S]+@[\S]+\.[\S]+$/;
-        const PASS_RE = /^.{1,20}$/;
+        const PASS_RE = /^(?=.*[A-Za-z])(?=.*[0-9]).{8,20}$/;
 
         errors.userNameError = "";
         errors.firstNameError = "";
@@ -124,8 +124,7 @@ function SessionHandler(db) {
             return false;
         }
         if (!PASS_RE.test(password)) {
-            errors.passwordError = "Password must be 8 to 18 characters" +
-                " including numbers, lowercase and uppercase letters.";
+            errors.passwordError = "Password must be at least 8 characters and include letters and numbers.";
             return false;
         }
         if (password !== verify) {
@@ -165,7 +164,7 @@ function SessionHandler(db) {
                 if (err) return next(err);
 
                 if (user) {
-                    errors.userNameError = "User name already in use. Please choose another";
+                    errors.userNameError = "User name not available";
                     return res.render("signup", {
                         ...errors,
                         environmentalScripts
