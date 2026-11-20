@@ -35,7 +35,11 @@ MongoClient.connect(db, (err, db) => {
         secret: cookieSecret,
         // Both mandatory in Express v4
         saveUninitialized: true,
-        resave: true
+        resave: true,
+        cookie: {
+            secure: true,
+            sameSite: "strict"
+        }
     }));
 
     // Register templating engine
